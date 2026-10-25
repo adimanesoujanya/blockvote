@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="BlockVote - A Secure and Transparent Electronic Voting System Using Blockchain Technology (Final Year CSE Project Demo)." />
+  <title>BlockVote | Secure Blockchain Voting Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Accessible Skip Link -->
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ===================== HEADER & NAVIGATION ===================== -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a href="#home" class="brand" aria-label="BlockVote Home">
+        <svg class="brand-logo" viewBox="0 0 40 40" aria-hidden="true">
+          <rect x="3" y="3" width="34" height="34" rx="9" fill="#0b1f3a"/>
+          <path d="M12 21l6 6 11-13" fill="none" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">BlockVote</span>
+      </a>
+
+      <!-- Mobile Navigation Hamburger -->
+      <button class="nav-toggle" id="navToggle" type="button"
+              aria-expanded="false" aria-controls="mainNav" aria-label="Toggle navigation menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+
+      <!-- Main Navigation Menu -->
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li><a href="#home" class="nav-link">Home</a></li>
+          <li><a href="#stats" class="nav-link">Statistics</a></li>
+          <li><a href="#voting" class="nav-link">Candidates &amp; Voting</a></li>
+          <li><a href="#results" class="nav-link">Live Results</a></li>
+          <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li><a href="#security" class="nav-link">Security</a></li>
+        </ul>
+        <button class="btn btn-wallet" id="walletBtn" type="button" title="Click to connect your MetaMask wallet">
+          <span class="wallet-dot" id="walletDot" aria-hidden="true"></span>
+          <span id="walletBtnLabel">Connect MetaMask</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Wallet Status Bar -->
+    <div class="wallet-status-bar" id="walletStatus" role="status" aria-live="polite">
+      <div class="wallet-status-inner">
+        <span id="walletStatusText">MetaMask Wallet: <strong>Not Connected</strong> &bull; Click "Connect MetaMask" to interact with the Solidity smart contract.</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ===================== HERO SECTION ===================== -->
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="container hero-inner">
+        <div class="hero-text">
+          <span class="eyebrow">Final Year CSE Project &bull; Decentralized E-Voting</span>
+          <h1 id="hero-title">A Secure and Transparent Electronic Voting System Using Blockchain Technology</h1>
+          <p class="hero-desc">
+            Empowering democratic elections through cryptographic integrity, immutable ledger records,
+            and automated smart contracts. Experience the next generation of decentralized voting.
+          </p>
+          <div class="hero-actions">
+            <a href="#voting" class="btn btn-primary">Cast Ballot</a>
+            <a href="#results" class="btn btn-outline">View Real-time Results</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="chain">
+            <div class="block block-1">
+              <span>Genesis Block #0</span>
+              <small>Hash: 0x8f2a...c01</small>
+            </div>
+            <div class="link"></div>
+            <div class="block block-2">
+              <span>Vote Block #1</span>
+              <small>Hash: 0x3d7b...e4a</small>
+            </div>
+            <div class="link"></div>
+            <div class="block block-3">
+              <span>Latest Block #2</span>
+              <small>Hash: 0x91e2...f73</small>
+            </div>
+          </div>
+          <p class="visual-note">Distributed Ledger Representation</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ELECTION STATISTICS ===================== -->
+    <section class="section section-stats" id="stats" aria-labelledby="stats-title">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <h2 id="stats-title" class="section-title">Election Statistics</h2>
+            <p class="section-sub">
+              <span class="badge" id="sourceBadge">Live On-Chain Mode</span>
+              Real-time metrics queried directly from the Ethereum smart contract.
+            </p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon">&#128339;</div>
+            <div>
+              <p class="stat-label">Election Status</p>
+              <p class="stat-value" id="statStatus">Open</p>
+              <small class="stat-footnote" id="statStatusNote">Active Session</small>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">&#128101;</div>
+            <div>
+              <p class="stat-label">Total Candidates</p>
+              <p class="stat-value" id="statCandidates">3</p>
+              <small class="stat-footnote">Nominated for Election</small>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">&#9997;&#65039;</div>
+            <div>
+              <p class="stat-label">Total Votes Cast</p>
+              <p class="stat-value" id="statVotes">0</p>
+              <small class="stat-footnote" id="statVotesNote">Verified on Ledger</small>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">&#127942;</div>
+            <div>
+              <p class="stat-label">Current Leader</p>
+              <p class="stat-value" id="statLeader">Evaluating...</p>
+              <small class="stat-footnote">Based on current tally</small>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CANDIDATES & VOTING SECTION ===================== -->
+    <section class="section" id="voting" aria-labelledby="voting-title">
+      <div class="container">
+        <h2 id="voting-title" class="section-title">Candidates &amp; Voting Ballot</h2>
+        <p class="section-sub" id="votingSubtitle">
+          <span class="badge badge-warn" id="votingModeBadge">Web3 Authentication</span>
+          Connect MetaMask to cast your ballot. The transaction will be cryptographically signed and stored in the Solidity smart contract.
+        </p>
+
+        <!-- Feedback Banner & Reset Action -->
+        <div class="vote-alert-container">
+          <div class="message" id="voteMessage" role="status" aria-live="polite" hidden></div>
+          <button id="resetDemoBtn" class="btn btn-ghost" type="button" style="display: none;">
+            &#8635; Switch / Reset Demo Mode
+          </button>
+        </div>
+
+        <!-- Candidate Cards Grid (rendered dynamically by script.js) -->
+        <div class="candidate-grid" id="candidateGrid">
+          <!-- Candidate cards injected by script.js -->
+        </div>
+
+        <!-- On-Chain Transaction Receipt (Shown after mining) -->
+        <div id="txReceiptContainer" class="tx-receipt-card" style="display: none;">
+          <div class="tx-receipt-header">
+            <h3 class="tx-receipt-title">
+              <span>&#9989;</span> Blockchain Transaction Receipt
+            </h3>
+            <span class="badge badge-live">Mined on Ganache</span>
+          </div>
+          <div class="tx-receipt-grid">
+            <div class="tx-item">
+              <p class="tx-item-label">Voter Address</p>
+              <p class="tx-item-value" id="receiptVoter">-</p>
+            </div>
+            <div class="tx-item">
+              <p class="tx-item-label">Candidate Chosen</p>
+              <p class="tx-item-value" id="receiptCandidate">-</p>
+            </div>
+            <div class="tx-item">
+              <p class="tx-item-label">Block Number</p>
+              <p class="tx-item-value" id="receiptBlock">-</p>
+            </div>
+            <div class="tx-item">
+              <p class="tx-item-label">Gas Consumed</p>
+              <p class="tx-item-value" id="receiptGas">-</p>
+            </div>
+            <div class="tx-item" style="grid-column: 1 / -1;">
+              <p class="tx-item-label">Transaction Hash</p>
+              <p class="tx-item-value" id="receiptTxHash">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RESULTS DASHBOARD ===================== -->
+    <section class="section section-alt" id="results" aria-labelledby="res-title">
+      <div class="container">
+        <h2 id="res-title" class="section-title">Results Dashboard</h2>
+        <p class="section-sub">
+          <span class="badge">Real-Time Tally</span>
+          Watch vote distributions and percentages update immediately upon block confirmation.
+        </p>
+
+        <div class="results-card">
+          <div class="results-header">
+            <div>
+              <span class="results-subtitle">Total Valid Ballots</span>
+              <div class="results-total-number" id="resultsTotal">0</div>
+            </div>
+            <div class="live-pill">
+              <span class="pulse-dot"></span> Live Ledger Sync
+            </div>
+          </div>
+
+          <!-- Dynamic Progress Bars List -->
+          <ul class="results-list" id="resultsList">
+            <!-- Result rows dynamically generated by script.js -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== HOW IT WORKS SECTION ===================== -->
+    <section class="section" id="how-it-works" aria-labelledby="how-title">
+      <div class="container">
+        <h2 id="how-title" class="section-title">How It Works</h2>
+        <p class="section-sub">The decentralized architecture workflow powered by Ethereum smart contracts and MetaMask.</p>
+        
+        <div class="steps-grid">
+          <div class="step-card">
+            <span class="step-badge">Step 1</span>
+            <h3>Connect Wallet</h3>
+            <p>Voters connect their MetaMask wallet (Ethereum Web3 provider) to authenticate their unique public address.</p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-badge">Step 2</span>
+            <h3>Review Candidates</h3>
+            <p>Voters examine the certified candidates, their policy agendas, and unique candidate identifier numbers.</p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-badge">Step 3</span>
+            <h3>Sign &amp; Cast Ballot</h3>
+            <p>Voters trigger the Solidity function <code>vote(candidateId)</code>. MetaMask signs the transaction with gas fees.</p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-badge">Step 4</span>
+            <h3>Verify on Ledger</h3>
+            <p>The transaction is mined into a block on Ganache. The contract enforces single-vote eligibility and updates the ledger.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SECURITY & TRANSPARENCY ===================== -->
+    <section class="section section-alt" id="security" aria-labelledby="sec-title">
+      <div class="container">
+        <h2 id="sec-title" class="section-title">Security &amp; Blockchain Architecture</h2>
+        <p class="section-sub">Key cryptographic principles behind a blockchain-powered electronic voting system.</p>
+        
+        <div class="info-grid">
+          <article class="info-card">
+            <div class="info-icon">&#128274;</div>
+            <h3>Immutability</h3>
+            <p>Once a vote is confirmed on the blockchain, cryptographic hashing ensures that neither administrators nor attackers can alter or delete the record.</p>
+          </article>
+
+          <article class="info-card">
+            <div class="info-icon">&#9878;&#65039;</div>
+            <h3>Smart Contract Enforcement</h3>
+            <p>Voting rules, candidate lists, and election deadlines are executed automatically via Solidity code without human intervention.</p>
+          </article>
+
+          <article class="info-card">
+            <div class="info-icon">&#128683;</div>
+            <h3>Double-Voting Prevention</h3>
+            <p>The contract maintains a <code>mapping(address =&gt; Voter) public voters</code>, instantaneously reverting any subsequent attempt from the same address.</p>
+          </article>
+
+          <article class="info-card">
+            <div class="info-icon">&#128065;&#65039;</div>
+            <h3>Public Auditability</h3>
+            <p>Every transaction hash and event log can be independently inspected by voters, candidates, and third-party auditors using blockchain explorers.</p>
+          </article>
+        </div>
+
+        <div class="notice-banner">
+          <strong>Academic Demonstration Disclaimer:</strong> This project is created for final-year Computer Science &amp; Engineering curriculum demonstration. A production-grade nationwide e-voting system requires additional zero-knowledge proofs (ZKP) for absolute ballot secrecy and government-grade digital identity (DID) verification.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-col brand-col">
+        <div class="footer-brand">
+          <svg class="brand-logo-small" viewBox="0 0 40 40" aria-hidden="true">
+            <rect x="3" y="3" width="34" height="34" rx="9" fill="#14b8a6"/>
+            <path d="M12 21l6 6 11-13" fill="none" stroke="#0b1f3a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>BlockVote</span>
+        </div>
+        <p class="footer-title">
+          A Secure and Transparent Electronic Voting System Using Blockchain Technology
+        </p>
+        <p class="footer-sub">Final Year Computer Science and Engineering Project</p>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Project Modules</h4>
+        <ul class="footer-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#stats">Statistics</a></li>
+          <li><a href="#voting">Voting Ballot</a></li>
+          <li><a href="#results">Results Tally</a></li>
+          <li><a href="#how-it-works">Architecture</a></li>
+          <li><a href="#security">Security Model</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Technology Stack</h4>
+        <div class="tech-tags">
+          <span class="tag">HTML5</span>
+          <span class="tag">CSS3</span>
+          <span class="tag">JavaScript (ES6+)</span>
+          <span class="tag">Solidity</span>
+          <span class="tag">Ethereum / Ganache</span>
+          <span class="tag">MetaMask Web3</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; BlockVote &bull; Final Year CSE Project. Designed for academic demonstration.</p>
+    </div>
+  </footer>
+
+  <!-- Ethers.js Web3 Library for Smart Contract Interaction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+  <!-- Smart Contract Configuration (Address & ABI) -->
+  <script src="contract-config.js"></script>
+  <!-- Main JavaScript File -->
+  <script src="script.js"></script>
+</body>
+</html>
