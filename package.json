@@ -1,0 +1,18 @@
+{
+  "name": "blockvote-blockchain-voting",
+  "version": "1.0.0",
+  "description": "A Secure and Transparent Electronic Voting System Using Blockchain Technology",
+  "main": "scripts/deploy.js",
+  "scripts": {
+    "compile": "node scripts/compile.js",
+    "deploy": "node scripts/deploy.js",
+    "start": "python -m http.server 3000 --directory public"
+  },
+  "keywords": ["blockchain", "voting", "solidity", "ethereum", "ganache", "metamask"],
+  "author": "Final Year CSE Student",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.13.2",
+    "solc": "^0.8.20"
+  }
+}
