@@ -21,7 +21,7 @@ const DEFAULT_CANDIDATES = [
     name: "Dr. Evelyn Reed",
     role: "Digital Rights & Open Data",
     description: "Focusing on cryptographic transparency in public systems, algorithmic accountability, and digital voting rights.",
-    votes: 42
+    votes: 0
   },
   {
     id: 2,
@@ -29,7 +29,7 @@ const DEFAULT_CANDIDATES = [
     name: "Marcus Vance",
     role: "Decentralized Infrastructure",
     description: "Championing decentralized identity protocols, green energy blockchain networks, and tamper-resistant civic ledgers.",
-    votes: 38
+    votes: 0
   },
   {
     id: 3,
@@ -37,9 +37,71 @@ const DEFAULT_CANDIDATES = [
     name: "Sophia Chen",
     role: "AI Ethics & Public Policy",
     description: "Advocating for ethical AI deployment, privacy-preserving governance frameworks, and accessible civic participation.",
-    votes: 29
+    votes: 0
   }
 ];
+
+/* ---------- Cloud Real-Time Global Tally (Syncs 50+ Classmates Phones) ---------- */
+const CLOUD_SYNC = {
+  enabled: true,
+  baseUrl: "https://countapi.mileshilliard.com/api/v1",
+  keys: {
+    1: "blockvote_2026_soujanya_c1",
+    2: "blockvote_2026_soujanya_c2",
+    3: "blockvote_2026_soujanya_c3"
+  }
+};
+
+// Fetch real-time shared counts from cloud across all classmate devices
+async function fetchCloudVotes() {
+  if (!CLOUD_SYNC.enabled || state.mode === "web3") return;
+  try {
+    const promises = [1, 2, 3].map(function (id) {
+      const key = CLOUD_SYNC.keys[id];
+      return fetch(CLOUD_SYNC.baseUrl + "/get/" + key, { cache: "no-store" })
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+          return { id: id, count: data && typeof data.value === "number" ? data.value : 0 };
+        })
+        .catch(function () { return { id: id, count: 0 }; });
+    });
+
+    const results = await Promise.all(promises);
+    let updated = false;
+    results.forEach(function (res) {
+      const cand = state.candidates.find(function (c) { return c.id === res.id; });
+      if (cand && cand.votes !== res.count) {
+        cand.votes = res.count;
+        updated = true;
+      }
+    });
+
+    if (updated) {
+      renderStatistics();
+      renderResults();
+    }
+  } catch (e) {
+    console.log("Cloud sync check:", e);
+  }
+}
+
+// Increment live cloud tally when classmate votes
+async function incrementCloudVote(candidateId) {
+  const key = CLOUD_SYNC.keys[candidateId];
+  if (!key) return;
+  try {
+    const res = await fetch(CLOUD_SYNC.baseUrl + "/hit/" + key, { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      const cand = state.candidates.find(function (c) { return c.id === candidateId; });
+      if (cand && typeof data.value === "number") {
+        cand.votes = data.value;
+      }
+    }
+  } catch (err) {
+    console.log("Cloud hit error:", err);
+  }
+}
 
 /* ---------- 2. Application State ---------- */
 const state = {
@@ -641,7 +703,15 @@ async function castVote(candidateId) {
     return;
   }
 
-  // 3. Fallback: Demo In-Memory Voting (when MetaMask is not connected or contract not deployed)
+  // 3. Fallback: Demo Cloud-Synced Voting (when MetaMask is not connected or on mobile devices)
+  // Check if voter already cast ballot on this device
+  if (localStorage.getItem("blockvote_voted_soujanya")) {
+    state.hasVoted = true;
+    displayFeedback("Double-voting blocked: You have already cast your ballot in this election.", "error");
+    renderCandidates();
+    return;
+  }
+
   const candidate = state.candidates.find(function (c) {
     return c.id === candidateId;
   });
@@ -654,9 +724,17 @@ async function castVote(candidateId) {
   candidate.votes += 1;
   state.hasVoted = true;
   state.votedCandidateId = candidateId;
+  localStorage.setItem("blockvote_voted_soujanya", String(candidateId));
+
+  displayFeedback("✓ Recording your ballot in the live election tally...", "info");
+  renderAll();
+
+  // Increment live cloud tally so all 50 classmates see it instantly!
+  await incrementCloudVote(candidateId);
+  await fetchCloudVotes();
 
   displayFeedback(
-    "✓ Demo vote recorded for " + candidate.name + "! (In-Memory Frontend Simulation). Connect MetaMask to test real on-chain voting.",
+    "✓ Ballot successfully recorded for " + candidate.name + "! Live election tally updated across all devices.",
     "success"
   );
 
@@ -669,6 +747,7 @@ async function castVote(candidateId) {
 
 // Reset Demo Session back to initial values
 function resetDemoSession() {
+  localStorage.removeItem("blockvote_voted_soujanya");
   state.candidates = DEFAULT_CANDIDATES.map(function (c) {
     return Object.assign({}, c);
   });
@@ -685,7 +764,8 @@ function resetDemoSession() {
     el.resetDemoBtn.style.display = "none";
   }
 
-  displayFeedback("Demo session has been reset. You can now cast a new demo ballot or connect MetaMask.", "info");
+  displayFeedback("Demo session has been reset. Syncing live election tally...", "info");
+  fetchCloudVotes();
   renderAll();
 }
 
@@ -777,6 +857,13 @@ if (typeof window.ethereum !== "undefined") {
 
 /* ---------- 9. Initial Dashboard Boot ---------- */
 function init() {
+  // Check if this device already voted in cloud demo session
+  const savedVote = localStorage.getItem("blockvote_voted_soujanya");
+  if (savedVote) {
+    state.hasVoted = true;
+    state.votedCandidateId = Number(savedVote);
+  }
+
   renderAll();
 
   // If user already authorized MetaMask previously, connect automatically
@@ -784,13 +871,27 @@ function init() {
     window.ethereum.request({ method: "eth_accounts" }).then(function (accounts) {
       if (accounts && accounts.length > 0) {
         connectWallet();
+      } else {
+        // Not connected to Web3: fetch live cloud tallies
+        fetchCloudVotes();
       }
     }).catch(function (err) {
       console.log("Silent wallet check:", err);
+      fetchCloudVotes();
     });
+  } else {
+    // Mobile phones or browsers without MetaMask: fetch live cloud tallies
+    fetchCloudVotes();
   }
 
-  console.log("BlockVote initialized successfully.");
+  // Poll live cloud tally every 4 seconds so laptop & all 50 phones update in real time!
+  setInterval(function () {
+    if (state.mode !== "web3") {
+      fetchCloudVotes();
+    }
+  }, 4000);
+
+  console.log("BlockVote initialized successfully with live cloud tally synchronization.");
 }
 
 // Run when DOM is ready
